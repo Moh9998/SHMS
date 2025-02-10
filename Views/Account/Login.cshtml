@@ -1,0 +1,15 @@
+﻿<!-- Login.cshtml -->
+@model dynamic
+<h2 class="text-center">Login</h2>
+<form method="post" class="container w-50 p-4 border rounded shadow-sm">
+    <div class="mb-3">
+        <label class="form-label">Email:</label>
+        <input type="email" name="email" class="form-control" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Password:</label>
+        <input type="password" name="password" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Login</button>
+    <a href="/account/register" class="btn btn-link w-100">Register</a>
+</form>

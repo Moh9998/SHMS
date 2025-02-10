@@ -1,0 +1,26 @@
+﻿<!-- Register.cshtml -->
+@model dynamic
+<h2 class="text-center">Register</h2>
+<form method="post" class="container w-50 p-4 border rounded shadow-sm">
+    <div class="mb-3">
+        <label class="form-label">Name:</label>
+        <input type="text" name="name" class="form-control" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Email:</label>
+        <input type="email" name="email" class="form-control" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Password:</label>
+        <input type="password" name="password" class="form-control" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Role:</label>
+        <select name="role" class="form-select">
+            <option value="Doctor">Doctor</option>
+            <option value="Patient">Patient</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Register</button>
+    <a href="/account/login" class="btn btn-link w-100">Login</a>
+</form>
