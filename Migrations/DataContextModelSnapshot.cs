@@ -48,6 +48,8 @@ namespace SHMS.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("PatientId");
+
                     b.ToTable("TestResults");
                 });
 
@@ -56,6 +58,11 @@ namespace SHMS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -75,6 +82,63 @@ namespace SHMS.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasDiscriminator().HasValue("User");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("SHMS.Models.Doctor", b =>
+                {
+                    b.HasBaseType("SHMS.Models.User");
+
+                    b.Property<string>("Specialty")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasDiscriminator().HasValue("Doctor");
+                });
+
+            modelBuilder.Entity("SHMS.Models.Patient", b =>
+                {
+                    b.HasBaseType("SHMS.Models.User");
+
+                    b.Property<int?>("DoctorId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("MedicalRecordNumber")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasDiscriminator().HasValue("Patient");
+                });
+
+            modelBuilder.Entity("SHMS.Models.TestResult", b =>
+                {
+                    b.HasOne("SHMS.Models.Patient", null)
+                        .WithMany("TestResults")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SHMS.Models.Patient", b =>
+                {
+                    b.HasOne("SHMS.Models.Doctor", null)
+                        .WithMany("Patients")
+                        .HasForeignKey("DoctorId");
+                });
+
+            modelBuilder.Entity("SHMS.Models.Doctor", b =>
+                {
+                    b.Navigation("Patients");
+                });
+
+            modelBuilder.Entity("SHMS.Models.Patient", b =>
+                {
+                    b.Navigation("TestResults");
                 });
 #pragma warning restore 612, 618
         }

@@ -11,43 +11,14 @@ using SHMS.Data;
 namespace SHMS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250210075802_AddingFieldsToTestResults")]
-    partial class AddingFieldsToTestResults
+    [Migration("20250211085527_NewDbInit")]
+    partial class NewDbInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.1");
-
-            modelBuilder.Entity("SHMS.Models.TestParameter", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("NormalRangeMax")
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("NormalRangeMin")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("TestResultId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("Value")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TestResultId");
-
-                    b.ToTable("TestParameters");
-                });
 
             modelBuilder.Entity("SHMS.Models.TestResult", b =>
                 {
@@ -58,21 +29,14 @@ namespace SHMS.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("FilePath")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<double>("NormalMax")
+                        .HasColumnType("REAL");
 
-                    b.Property<decimal>("NormalMax")
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("NormalMin")
-                        .HasColumnType("TEXT");
+                    b.Property<double>("NormalMin")
+                        .HasColumnType("REAL");
 
                     b.Property<int>("PatientId")
                         .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("TestDate")
-                        .HasColumnType("TEXT");
 
                     b.Property<string>("TestName")
                         .IsRequired()
@@ -82,13 +46,12 @@ namespace SHMS.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("UploadedBy")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("Value")
-                        .HasColumnType("TEXT");
+                    b.Property<double>("Value")
+                        .HasColumnType("REAL");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PatientId");
 
                     b.ToTable("TestResults");
                 });
@@ -98,6 +61,11 @@ namespace SHMS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -117,20 +85,63 @@ namespace SHMS.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasDiscriminator().HasValue("User");
+
+                    b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("SHMS.Models.TestParameter", b =>
+            modelBuilder.Entity("SHMS.Models.Doctor", b =>
                 {
-                    b.HasOne("SHMS.Models.TestResult", null)
-                        .WithMany("Parameters")
-                        .HasForeignKey("TestResultId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasBaseType("SHMS.Models.User");
+
+                    b.Property<string>("Specialty")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasDiscriminator().HasValue("Doctor");
+                });
+
+            modelBuilder.Entity("SHMS.Models.Patient", b =>
+                {
+                    b.HasBaseType("SHMS.Models.User");
+
+                    b.Property<int?>("DoctorId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("MedicalRecordNumber")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasDiscriminator().HasValue("Patient");
                 });
 
             modelBuilder.Entity("SHMS.Models.TestResult", b =>
                 {
-                    b.Navigation("Parameters");
+                    b.HasOne("SHMS.Models.Patient", null)
+                        .WithMany("TestResults")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SHMS.Models.Patient", b =>
+                {
+                    b.HasOne("SHMS.Models.Doctor", null)
+                        .WithMany("Patients")
+                        .HasForeignKey("DoctorId");
+                });
+
+            modelBuilder.Entity("SHMS.Models.Doctor", b =>
+                {
+                    b.Navigation("Patients");
+                });
+
+            modelBuilder.Entity("SHMS.Models.Patient", b =>
+                {
+                    b.Navigation("TestResults");
                 });
 #pragma warning restore 612, 618
         }
