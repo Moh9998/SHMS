@@ -18,30 +18,6 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                        <ul class="navbar-nav flex-grow-1">
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                            </li>
-                        </ul>
-                        <ul class="navbar-nav">
-                            @if (User.IsInRole(UserRole.Doctor.ToString()))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="TestResults" asp-action="Upload">Doctor Upload</a>
-                                </li>
-                            }
-                            
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="TestResults" asp-action="Patient" asp-route-patientId="1">View Test Results</a>
-                            </li>
-                        </ul>
-
                         <a class="btn btn-outline-primary" type="button" asp-controller="Account" asp-action="LogOut">Logout</a>
                     </div>
                 }
@@ -63,6 +39,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

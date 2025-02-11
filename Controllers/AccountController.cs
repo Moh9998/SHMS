@@ -52,7 +52,6 @@ public class AccountController : Controller
         return View( );
     }
 
-    [HttpPost]
     public async Task<IActionResult> Login(string email, string password)
     {
         var user = _context.Users.FirstOrDefault(u => u.Email == email);
@@ -74,8 +73,20 @@ public class AccountController : Controller
         var principal = new ClaimsPrincipal(identity);
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
+        // Redirect based on user role
+        if (user.Role == UserRole.Doctor)
+        {
+            return RedirectToAction("Upload", "TestResults");
+        }
+        else if (user.Role == UserRole.Patient)
+        {
+            return RedirectToAction("Patient", "TestResults");
+        }
+
+        // Default redirect if role is not recognized
         return RedirectToAction("Index", "Home");
     }
+
 
 
     public async Task<IActionResult> Logout()
