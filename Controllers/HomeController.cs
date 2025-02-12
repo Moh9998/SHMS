@@ -27,15 +27,21 @@ namespace SHMS.Controllers
                 return Unauthorized( );
             }
 
-            var currentUser = _context.Users.FirstOrDefault(u => u.Id == int.Parse(userId));
+            if (!int.TryParse(userId, out int parsedUserId))
+            {
+                _logger.LogWarning("Invalid user ID format: {UserId}", userId);
+                return BadRequest("Invalid user ID format.");
+            }
+
+            var currentUser = _context.Users.FirstOrDefault(u => u.Id == parsedUserId);
             if (currentUser == null)
             {
+                _logger.LogWarning("User not found: {UserId}", parsedUserId);
                 return NotFound( );
             }
 
             return View(currentUser);
         }
-
 
         public IActionResult Privacy()
         {
